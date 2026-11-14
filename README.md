@@ -245,4 +245,5 @@ if (totalRequired > 0) {
 ### Q5: How is data persisted when the application is closed?
 **Answer:** We use Core Java file handling classes (`BufferedReader`, `BufferedWriter`, `FileInputStream`, and `FileOutputStream`) with `StandardCharsets.UTF_8` in `FileManager.java`. Data is stored in plain text files (`resume.txt`, `internships.txt`, `saved_internships.txt`) using pipe delimiters (`|`), making the records robust and transparent.
 #   i n t e r n s e a r c h  
+ #   i n t e r n s e a r c h  
  
