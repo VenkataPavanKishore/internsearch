@@ -28,3 +28,22 @@ mywebsite/target/
 # OS specific files
 Thumbs.db
 .DS_Store
+
+# Stray root-level Spring Boot leftovers (belong inside mywebsite/ only)
+/application.properties
+/HELP.md
+/mvnw
+/mvnw.cmd
+/pom.xml
+/maven-wrapper.properties
+/MywebsiteApplication.java
+/MywebsiteApplicationTests.java
+
+# Data files at root (live inside InternSearch/ and mywebsite/)
+/internships.txt
+/resume.txt
+/saved_internships.txt
+
+# Junk download files
+/download
+/download (1)
