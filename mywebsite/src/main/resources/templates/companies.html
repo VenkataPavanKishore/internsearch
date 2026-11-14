@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Companies – InternSearch</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('companies')}"></div>
+
+<main class="container py-4">
+
+    <!-- Flash Notifications -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i> <span th:text="${infoMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Page Header -->
+    <div class="mb-4 text-center">
+        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-semibold mb-2">
+            Company Exploration
+        </span>
+        <h2 class="fw-bold">🏢 Search Internships by Company Name</h2>
+        <p class="text-muted col-lg-8 mx-auto">
+            Discover what technical skills top employers expect for their internship roles, regardless of what is currently on your resume.
+        </p>
+    </div>
+
+    <!-- Search Input Form -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <form th:action="@{/companies}" method="get">
+                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border">
+                    <span class="input-group-text bg-white border-0 ps-4">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" name="query" class="form-control border-0 px-3"
+                           placeholder="Enter company name (e.g. Google, Microsoft, Amazon, Infosys, Razorpay)..."
+                           th:value="${searchQuery}">
+                    <button class="btn btn-primary px-4 fw-semibold" type="submit">Search</button>
+                </div>
+                <div class="d-flex justify-content-center gap-2 mt-3 small text-muted">
+                    <span>Popular:</span>
+                    <a th:href="@{/companies(query='Google')}" class="text-decoration-none">Google</a> •
+                    <a th:href="@{/companies(query='Microsoft')}" class="text-decoration-none">Microsoft</a> •
+                    <a th:href="@{/companies(query='Amazon')}" class="text-decoration-none">Amazon</a> •
+                    <a th:href="@{/companies(query='Razorpay')}" class="text-decoration-none">Razorpay</a> •
+                    <a th:href="@{/companies(query='Adobe')}" class="text-decoration-none">Adobe</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Results Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold mb-0">
+            <span th:if="${searchQuery != ''}">Search results for "<span class="text-primary" th:text="${searchQuery}">Google</span>"</span>
+            <span th:if="${searchQuery == ''}">All Participating Employers</span>
+            <span class="text-muted fw-normal fs-6 ms-2">(<span th:text="${totalFound}">15</span> listings)</span>
+        </h5>
+        <a th:if="${searchQuery != ''}" th:href="@{/companies}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            Clear Search
+        </a>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(companies)}" class="text-center py-5 bg-white rounded-4 border">
+        <i class="bi bi-buildings display-1 text-muted opacity-50 mb-3"></i>
+        <h4 class="fw-bold">No Companies Found</h4>
+        <p class="text-muted">No internship opportunities matched "<span th:text="${searchQuery}"></span>". Try a different or partial name.</p>
+        <a th:href="@{/companies}" class="btn btn-primary rounded-pill px-4">View All Companies</a>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="row g-4">
+        <div th:each="in : ${companies}" class="col-md-6 col-lg-4">
+            <div class="job-card p-4 d-flex flex-column h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="badge bg-light text-primary border fw-bold mb-2" th:text="${in.companyName}">Microsoft</span>
+                        <h5 class="fw-bold mb-0" th:text="${in.role}">Full Stack Developer Intern</h5>
+                    </div>
+                    <span class="badge bg-info bg-opacity-10 text-info" th:text="${in.workMode}">Hybrid</span>
+                </div>
+
+                <div class="text-muted small mb-3">
+                    <div><i class="bi bi-geo-alt me-1 text-danger"></i> <span th:text="${in.location}">Hyderabad</span></div>
+                    <div><i class="bi bi-cash-stack me-1 text-success"></i> <span th:text="${in.stipend}">Rs. 85,000 / month</span></div>
+                    <div><i class="bi bi-calendar-check me-1 text-primary"></i> <span th:text="${in.duration}">6 Months</span></div>
+                </div>
+
+                <p class="text-muted small flex-grow-1" th:text="${in.description}">Description...</p>
+
+                <!-- Required Skills Section -->
+                <div class="mb-3">
+                    <small class="text-muted fw-semibold d-block mb-1">Company Requires:</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span th:each="s : ${in.requiredSkills}" class="badge bg-light text-dark border" th:text="${s}">Java</span>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="d-flex gap-2 pt-3 border-top mt-auto">
+                    <a th:href="@{'/internships/' + ${in.id}}" class="btn btn-outline-primary btn-sm flex-grow-1 rounded-pill fw-semibold">
+                        View Details
+                    </a>
+                    <form th:action="@{/saved/add}" method="post" class="d-inline">
+                        <input type="hidden" name="id" th:value="${in.id}">
+                        <input type="hidden" name="redirectUrl" th:value="${currentUrl}">
+                        <button type="submit"
+                                th:class="${savedIds != null and savedIds.contains(in.id.toLowerCase())} ? 'btn btn-sm btn-success text-white rounded-pill px-3 fw-semibold' : 'btn btn-sm btn-primary rounded-pill px-3 fw-semibold'">
+                            <i th:class="${savedIds != null and savedIds.contains(in.id.toLowerCase())} ? 'bi bi-bookmark-check-fill me-1' : 'bi bi-bookmark-plus me-1'"></i>
+                            <span th:text="${savedIds != null and savedIds.contains(in.id.toLowerCase())} ? 'Saved' : 'Save'">Save</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
